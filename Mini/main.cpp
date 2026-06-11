@@ -140,6 +140,20 @@ void customerMenu(Customer& user ,  RestaurantDAO& rDAO , MenuItemDAO& mDAO , Or
 }
 }
 
+double readDouble(const string& prompt) {
+    double val;
+    while (true) {
+        cout << prompt;
+        if (cin >> val) {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            return val;
+        }
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Invalid input. Please enter a number." << endl;
+    }
+}
+
 void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO, OrderDAO& oDAO) {
     int rId = user.getRestaurantId();
     while (true) {
@@ -188,25 +202,43 @@ void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO
             int ch = readInt("1. Add item   2. Edit   3. Delete   0. Back\nChoice: ");
             
             if (ch == 1) {
+                string name, desc;
                 cout << "Name: "; 
-                string name;
                 getline(cin, name);
                 cout << "Description: "; 
-                string desc;
                 getline(cin, desc);
-                cout << "Price: ";
-                double price = stod(readInt(""));
-               
-                cout << "Item added.\n";
+                
+                double price = readDouble("Price: ");
+                
+                cout << "Item type (1: Food, 2: Drink, 3: Other): ";
+                int typeChoice = readInt("");
+                
+                MenuItem* newItem = nullptr;
+                if (typeChoice == 1) {
+                    int readyTime = readInt("Ready time (minutes): ");
+                    newItem = new Food(readyTime, 0, name, desc, price, true);
+                } else if (typeChoice == 2) {
+                    int capacity = readInt("Capacity (mL): ");
+                    newItem = new Drink(capacity, 0, name, desc, price, true);
+                } else {
+                    string group;
+                    cout << "Group: ";
+                    getline(cin, group);
+                    newItem = new Other(group, 0, name, desc, price, true);
+                }
+                
+                mDAO.insertMenuItem(rId, newItem);
+                cout << "Item added successfully!\n";
+                delete newItem;
             }
             else if (ch == 2) {
                 int itemId = readInt("Item ID for editing: ");
-                cout << "Edit item " << itemId << endl;
+                cout << "Edit item " << itemId << " (implementation needed)\n";
             }
             else if (ch == 3) {
                 int itemId = readInt("Item ID for deleting: ");
                 mDAO.deleteMenuItem(itemId);
-                cout << "Item deleted :(\n" << endl;
+                cout << "Item deleted :(\n";
             }
             
             for (auto* item : items) {
@@ -224,7 +256,7 @@ void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO
                 order.display();
             }
             int orderId = readInt("Order ID to update: ");
-            if (orderId == 0) {
+            if (orderId == 0) {s
                 continue;
             }
             cout << "1. Preparing\n2. Ready to send\n3. Delivered" << endl;

@@ -155,10 +155,18 @@ void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO
 
             int ch = readInt("1. Edit information   0. Back\nChoice: ");
             if (ch == 1) {
-                cout << "New name: "; string name; getline(cin, name);
-                cout << "New address: "; string addr; getline(cin, addr);
-                cout << "New phone: "; string phone; getline(cin, phone);
-                cout << "Description: "; string desc; getline(cin, desc);
+                cout << "New name: "; 
+                string name; 
+                getline(cin, name);
+                cout << "New address: "; 
+                string addr; 
+                getline(cin, addr);
+                cout << "New phone: "; 
+                string phone; 
+                getline(cin, phone);
+                cout << "Description: "; 
+                string desc; 
+                getline(cin, desc);
                 int prep = readInt("Preparation time (minutes): ");
 
                 r->setName(name);
@@ -181,9 +189,11 @@ void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO
             int ch = readInt("1. Add item   2. Edit   3. Delete   0. Back\nChoice: ");
             if (ch == 1) {
                 cout << "Name: "; 
-                string name; getline(cin, name);
+                string name;
+                getline(cin, name);
                 cout << "Description: "; 
-                string desc; getline(cin, desc);
+                string desc; 
+                getline(cin, desc);
                 double price; 
                 cout << "Price: "; cin >> price; 
                 cin.ignore();

@@ -92,3 +92,50 @@ int main() {
     cout << "Goodbye!We wil miss you:(" << endl;
     return 0;
 }
+void CustomerMenu(Customer& user ,  RestaurantDAO& rDAO , MenuItemDAO& mDAO , OrderDAO& oDAO){
+    Cart cart;
+    while(true){
+        user.showMenu();
+        int choice = readInt("Choice: ");
+        if(choice == 0){
+            break;
+        } 
+        else if(choice == 1){
+        vector<Restaurant> restaurants = rDAO.getAllRestaurants();
+        if(restaurants.empty()){
+            cout << "No restaurant is available" << endl;
+            continue;
+        }
+        cout << "_____Avaiable restaurant_____" << endl;
+        for(auto& r : restaurants){
+            if(r.getStatus()){
+               r.display();
+            }
+        }
+        int rId = readInt("Select restaurantId: ");
+        if(rId == 0){
+            continue;
+        }
+
+        Restaurant* restaurant = rDAO.getRestaurantById(rId);
+        if(restaurant == nullptr || !restaurant->getStatus()){
+            cout << "Restaurant is not available or not found" << endl;
+            delete restaurant;
+            continue;
+        }
+
+        vector<MenuItem*> items = mDAO.getMenuByRestaurant(rId);
+        if(items.empty()){
+            cout << "the menu is empty" << endl;
+        } else {
+            cout << "\n_____ Restaurant menu _____\n" << endl;
+            for(auto* item : items){
+                if(item->isAvailable()){
+                    item->display();
+                }
+            }
+        }
+        delete restaurant;
+    }
+}
+}

@@ -146,11 +146,14 @@ void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO
         user.showMenu();
         int choice = readInt("Choice: ");
         if (choice == 0)
-         break;
+            break;
         
-         else if (choice == 1) {
+        else if (choice == 1) {
             Restaurant* r = rDAO.getRestaurantById(rId);
-            if (!r) { cout << "Restaurant not found.\n"; continue; }
+            if (!r) { 
+                cout << "Restaurant not found.\n"; 
+                continue; 
+            }
             r->display();
 
             int ch = readInt("1. Edit information   0. Back\nChoice: ");
@@ -169,77 +172,43 @@ void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO
                 getline(cin, desc);
                 int prep = readInt("Preparation time (minutes): ");
 
-                r->setName(name);
-                r->setAddress(addr);
-                r->setPhone(phone);
-                r->setDescription(desc);
-                r->setPrepare(prep);
-                rDAO.updateRestaurant(*r);
+                Restaurant updatedR(r->getId(), name, addr, phone, r->getStatus(), prep, desc);
+                rDAO.updateRestaurant(updatedR);
                 cout << "Information updated.\n";
             }
             delete r;
         }
 
         else if (choice == 2) {
-            vector<MenuItem*> items = mDAO.getItemsByRestaurantId(rId);
+            vector<MenuItem*> items = mDAO.getMenuByRestaurant(rId);  
             cout << "\n_____ Current Menu _____" << endl;
-            for (auto* item : items){
-                 item->display();
+            for (auto* item : items) {
+                if (item) item->display();
             }
             int ch = readInt("1. Add item   2. Edit   3. Delete   0. Back\nChoice: ");
+            
             if (ch == 1) {
                 cout << "Name: "; 
                 string name;
                 getline(cin, name);
                 cout << "Description: "; 
-                string desc; 
+                string desc;
                 getline(cin, desc);
-                double price; 
-                cout << "Price: "; cin >> price; 
-                cin.ignore();
-                int type = readInt("Type (1. Food 2. Drink 3. Other): ");
-
-                MenuItem* newItem = nullptr;
-                int newId = items.empty() ? 1 : items.back()->getId() + 1;
-
-                if (type == 1) {
-                    int rt = readInt("Cooking time (min): ");
-                    newItem = new Food(readyTime, id , name , description , price , true);
-                } else if (type == 2) {
-                    int ca = readInt("Capacity (mL): ");
-                    newItem = new Drink(capacity, id , name, descriptoin, price);
-                } else {
-                    cout << "Group: "; 
-                    string cat;
-                    getline(cin, cat);
-                    newItem = new Other(group ,Id, name, description, price, true);
-                }
-
-                if (newItem) {
-                    mDAO.insertMenuItemId(*newItem, rId);
-                    cout << "Item added." << endl;
-                    delete newItem;
-                }
-
-            } else if (ch == 2) {
-                int itemId = readInt("Item ID: ");
-                double newPrice;
-                cout << "New price: "; 
-                cin >> newPrice; cin.ignore();
-                for (auto* item : items) {
-                    if (item->getId() == itemId) {
-                        item->setPrice(newPrice);
-                        mDAO.updateMenuItemId(*item);
-                        cout << "Item updated." << endl;
-                        break;
-                    }
-                }
-            } else if (ch == 3) {
+                cout << "Price: ";
+                double price = stod(readInt(""));
+               
+                cout << "Item added.\n";
+            }
+            else if (ch == 2) {
+                int itemId = readInt("Item ID for editing: ");
+                cout << "Edit item " << itemId << endl;
+            }
+            else if (ch == 3) {
                 int itemId = readInt("Item ID for deleting: ");
                 mDAO.deleteMenuItem(itemId);
-                cout << "Item deleted:(" << endl;
+                cout << "Item deleted :(\n" << endl;
             }
-
+            
             for (auto* item : items) {
                 delete item;
             }
@@ -247,103 +216,27 @@ void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO
 
         else if (choice == 3) {
             vector<Order> orders = oDAO.getOrdersByRestaurantId(rId);
-            if (orders.empty()) {
-                 cout << "No orders available." << endl; 
-                 continue; 
-                }
-            for (auto& order : orders){
-                 order.display();
+            if (orders.empty()) { 
+                cout << "No orders available." << endl; 
+                continue; 
             }
-            int orderId = readInt("Order ID updated: ");
-            if (orderId == 0){
-                 continue;
+            for (auto& order : orders) {
+                order.display();
+            }
+            int orderId = readInt("Order ID to update: ");
+            if (orderId == 0) {
+                continue;
             }
             cout << "1. Preparing\n2. Ready to send\n3. Delivered" << endl;
             int s = readInt("Choice: ");
 
             OrderStatus newStatus = OrderStatus::PREPARING;
             if (s == 2) newStatus = OrderStatus::READY_TO_SEND;
-            else if (s == 3){
-                 newStatus = OrderStatus::DELIVERED;
+            else if (s == 3) {
+                newStatus = OrderStatus::DELIVERED;
             }
             oDAO.updateOrderStatus(orderId, newStatus);
-            cout << "status updated." << endl;
-        }
-    }
-}
-
-void adminMenu(SystemAdmin& user, RestaurantDAO& rDAO, UserDAO& uDAO) {
-    while (true) {
-        user.showMenu();
-        int choice = readInt("Choice: ");
-
-        if (choice == 0){
-         break;
-        }
-        else if (choice == 1) {
-            cout << "Restaurant name: ";
-            string name;
-            getline(cin, name);
-            cout << "Address: "; \
-            string addr; 
-            getline(cin, addr);
-            cout << "Phone: "; 
-            string phone; 
-            getline(cin, phone);
-            cout << "Description: "; 
-            string desc; 
-            getline(cin, desc);
-
-            int prep = readInt("Preparation time (min)");
-            vector<Restaurant> all = rDAO.getAllRestaurants();
-            int newId = all.empty() ? 1 : all.back().getId() + 1;
-
-            Restaurant newR(newId, name, addr, phone, true, prep, desc);
-            rDAO.insertRestaurant(newR);
-            cout << "Restaurant with ID " << newId << " registered.\n";
-        }
-
-        else if (choice == 2) {
-            vector<Restaurant> all = rDAO.getAllRestaurants();
-            if (all.empty()) {
-                cout << "No restaurants available." << endl;
-                continue;
-            }
-            for (auto& r : all){
-                r.display();
-            }
-            int rId = readInt("Restaurant ID: ");
-            Restaurant* r = rDAO.getRestaurantById(rId);
-            if (!r) {
-                 cout << "Not found!" << endl; 
-                }
-
-            r->setStatus(!r->getStatus());
-            rDAO.updateRestaurant(*r);
-            cout << "Restaurant status changed to " << (r->getStatus() ? "Active" : "Inactive") << endl;
-            delete r;
-        }
-
-        else if (choice == 3) {
-            vector<User*> users = uDAO.getAllUsers();
-            vector<Restaurant> restaurants = rDAO.getAllRestaurants();
-
-            cout << "\n_____ System Report _____\n" << endl;
-            cout << "Total users: " << users.size() << endl;
-            cout << "Total restaurants: " << restaurants.size() << endl;
-
-            int activeR = 0;
-            for (auto& r : restaurants)
-                if (r.getStatus()){
-                     activeR++;
-                }
-            cout << "Active restaurants: " << activeR << endl;
-            cout << "Inactive restaurants: " << (restaurants.size() - activeR) << endl;
-
-        
-            for (auto* u : users) {
-                delete u;
-            }
+            cout << "Status updated." << endl;
         }
     }
 }

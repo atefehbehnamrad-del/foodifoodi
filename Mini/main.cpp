@@ -68,7 +68,7 @@ int main() {
     if (!uDAO.findByUsername("admin")) {
         SystemAdmin defaultAdmin(1, "admin", "admin123", "System Admin");
         uDAO.insertUser(defaultAdmin);
-        cout << "Default admin created. (Admin / Admin123)\n";
+        cout << "Default admin created. (Admin / Admin123)" << endl;
     }
 
     while (true) {
@@ -92,7 +92,7 @@ int main() {
     cout << "Goodbye!We wil miss you:(" << endl;
     return 0;
 }
-void CustomerMenu(Customer& user ,  RestaurantDAO& rDAO , MenuItemDAO& mDAO , OrderDAO& oDAO){
+void customerMenu(Customer& user ,  RestaurantDAO& rDAO , MenuItemDAO& mDAO , OrderDAO& oDAO){
     Cart cart;
     while(true){
         user.showMenu();
@@ -181,7 +181,7 @@ void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO
         }
 
         else if (choice == 2) {
-            vector<MenuItem*> items = mDAO.getItemsByRestaurant(rId);
+            vector<MenuItem*> items = mDAO.getItemsByRestaurantId(rId);
             cout << "\n_____ Current Menu _____" << endl;
             for (auto* item : items){
                  item->display();
@@ -204,19 +204,19 @@ void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO
 
                 if (type == 1) {
                     int rt = readInt("Cooking time (min): ");
-                    newItem = new Food(newId, name, desc, price, true, rt);
+                    newItem = new Food(readyTime, id , name , description , price , true);
                 } else if (type == 2) {
                     int ca = readInt("Capacity (mL): ");
-                    newItem = new Drink(newId, name, desc, price, true, ca);
+                    newItem = new Drink(capacity, id , name, descriptoin, price);
                 } else {
                     cout << "Group: "; 
                     string cat;
                     getline(cin, cat);
-                    newItem = new Other(newId, name, desc, price, true, cat);
+                    newItem = new Other(group ,Id, name, description, price, true);
                 }
 
                 if (newItem) {
-                    mDAO.insertMenuItem(*newItem, rId);
+                    mDAO.insertMenuItemId(*newItem, rId);
                     cout << "Item added." << endl;
                     delete newItem;
                 }
@@ -229,7 +229,7 @@ void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO
                 for (auto* item : items) {
                     if (item->getId() == itemId) {
                         item->setPrice(newPrice);
-                        mDAO.updateMenuItem(*item);
+                        mDAO.updateMenuItemId(*item);
                         cout << "Item updated." << endl;
                         break;
                     }
@@ -246,7 +246,7 @@ void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO
         }
 
         else if (choice == 3) {
-            vector<Order> orders = oDAO.getOrdersByRestaurant(rId);
+            vector<Order> orders = oDAO.getOrdersByRestaurantId(rId);
             if (orders.empty()) {
                  cout << "No orders available." << endl; 
                  continue; 

@@ -256,8 +256,8 @@ void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO
                 order.display();
             }
             int orderId = readInt("Order ID to update: ");
-            if (orderId == 0) {s
-                continue;
+            if (orderId == 0) {
+                continue; 
             }
             cout << "1. Preparing\n2. Ready to send\n3. Delivered" << endl;
             int s = readInt("Choice: ");

@@ -1,19 +1,25 @@
 #include <iostream>
-#include <limits>
 #include <string>
+#include <limits>
+#include <vector>
 
-#include "DatabaseConnection.h"
+#include "DatabaseConnection.h" 
 #include "UserDAO.h"
 #include "RestaurantDAO.h"
 #include "MenuItemDAO.h"
 #include "OrderDAO.h"
-#include "CustomerUI.h"
-#include "ManagerUI.h"
-#include "AdminUI.h"
+#include "Customer.h"
+#include "RestaurantManager.h"
+#include "SystemAdmin.h"
+#include "Cart.h"
 
 using namespace std;
 
-static int readInt(const string& prompt) {
+void customerMenu(Customer& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO, OrderDAO& oDAO);
+void managerMenu(RestaurantManager& user, RestaurantDAO& rDAO, MenuItemDAO& mDAO, OrderDAO& oDAO);
+void adminMenu(SystemAdmin& user, RestaurantDAO& rDAO, UserDAO& uDAO);
+
+int readInt(const string& prompt) {
     int val;
     while (true) {
         cout << prompt;
@@ -23,27 +29,30 @@ static int readInt(const string& prompt) {
         }
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout << "Error:enter failed." << endl;
+        cout << "Invalid input. Please enter a number.\n";
     }
 }
 
 User* login(UserDAO& uDAO) {
-    cout << "\n_______________________\n" << endl;
-    cout << " Order food system" <<  endl;
-    cout << "_______________________" << endl;
-    cout << "username:"; string username; getline(cin, username);
-    cout << "password:"; string password; getline(cin, password);
+    cout << "\n____________________________" << endl;
+    cout << "  Food Order System  " << endl;
+    cout << "______________________________ " << endl;
+    cout << "Username: ";
+    string username; getline(cin, username);
+    cout << "Password: ";
+    string password; getline(cin, password);
 
     User* user = uDAO.findByUsername(username);
     if (!user) {
-        cout << "Error:user didnt find." << endl;
+        cout << "User not found." << endl;
         return nullptr;
-    } else if (!user->checkPassword(password)) {
-        cout << "Error:wrong password" << endl;
+    }
+    if (!user->checkPassword(password)) {
+        cout << "Wrong password." << endl;
         delete user;
         return nullptr;
     }
-    cout << "Wellcome " << user->getName() << "!Enjoy your time here:)";
+    cout << "WELLCOME, " << user->getName() << "!HAVE A GOOD TIME:)" << endl;
     return user;
 }
 
@@ -57,32 +66,29 @@ int main() {
     OrderDAO      oDAO(db.getConnection());
 
     if (!uDAO.findByUsername("admin")) {
-        SystemAdmin defaultAdmin(1, "admin", "admin123", "Admin system");
+        SystemAdmin defaultAdmin(1, "admin", "admin123", "System Admin");
         uDAO.insertUser(defaultAdmin);
-        cout << "Here id default admin for you: admin / admin123\n";
+        cout << "Default admin created. (Admin / Admin123)\n";
     }
 
     while (true) {
         User* user = login(uDAO);
         if (!user) continue;
 
-        if (user->getRole() == UserRole::CUSTOMER) {
-            CustomerUI ui(dynamic_cast<Customer&>(*user), rDAO, mDAO, oDAO);
-            ui.run();
+       if (user->getRole() == UserRole::CUSTOMER) {
+            customerMenu(dynamic_cast<Customer&>(*user), rDAO, mDAO, oDAO);
         } else if (user->getRole() == UserRole::RESTAURANT_MANAGER) {
-            ManagerUI ui(dynamic_cast<RestaurantManager&>(*user), rDAO, mDAO, oDAO);
-            ui.run();
+            managerMenu(dynamic_cast<RestaurantManager&>(*user), rDAO, mDAO, oDAO);
         } else if (user->getRole() == UserRole::SYSTEM_ADMIN) {
-            AdminUI ui(dynamic_cast<SystemAdmin&>(*user), rDAO, uDAO, oDAO);
-            ui.run();
+            adminMenu(dynamic_cast<SystemAdmin&>(*user), rDAO, uDAO);
         }
 
-        delete user;
-
-        int ch = readInt("\n1.Exit:(  0.Enter again:)\n choice: ");
+            delete user;
+        cout << "\n1. Login again\n0. Exit\nChoice: ";
+        int ch = readInt("");
         if (ch == 0) break;
     }
 
-    cout << "GoodBye:)Thank for coming here." << endl;
+    cout << "Goodbye!We wil miss you:(" << endl;
     return 0;
 }

@@ -12,6 +12,8 @@ public:
     double getDiscount() const override;
     int getErsalCost() const override;
     int getNextLevel() const override;
+    int getCoupons() const override;
+    string getStage() const override;
 };
 
 #endif

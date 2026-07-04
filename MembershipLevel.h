@@ -14,6 +14,10 @@ public:
     virtual double getDiscount() const = 0;
     virtual int getErsalCost() const = 0;
     virtual int getNextLevel() const = 0;
+    virtual int getCoupons() const = 0;
+    int FinalDiscount(double orderPrice) const{
+        return orderPrice * (getDiscount() / 100.0);
+    }
 };
 
 #endif

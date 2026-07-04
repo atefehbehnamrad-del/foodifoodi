@@ -11,7 +11,7 @@ double NormalLevel::getPointZarib() const{
 }
 
 double NormalLevel::getDiscount() const{
-    return 0;
+    return 0.0;
 }
 
 int NormalLevel::getErsalCost() const{
@@ -20,4 +20,12 @@ int NormalLevel::getErsalCost() const{
 
 int NormalLevel::getNextLevel() const{
     return 100;
+}
+
+int NormalLevel::getCoupons() const{
+    return 0;
+}
+
+string NormalLevel::getStage() const{
+    return "N";
 }

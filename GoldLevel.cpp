@@ -21,10 +21,10 @@ int GoldLevel::getErsalCost() const{
 int GoldLevel::getNextLevel() const{
     return 700;
 }
-int NormalLevel::getCoupons() const{
+int GoldLevel::getCoupons() const{
     return 1;
 }
 
-string NormalLevel::getStage() const{
+string GoldLevel::getStage() const{
     return "G";
 }

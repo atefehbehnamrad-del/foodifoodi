@@ -21,3 +21,11 @@ int VipLevel::getErsalCost() const{
 int VipLevel::getNextLevel() const{
     return -1;
 }
+
+int VipLevel::getCoupons() const{
+    return 3;
+}
+
+string VipLevel::getStage() const{
+    return "V";
+}

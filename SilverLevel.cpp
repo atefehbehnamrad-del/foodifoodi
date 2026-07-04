@@ -21,3 +21,11 @@ int SilverLevel::getErsalCost() const{
 int SilverLevel::getNextLevel() const{
     return 300;
 }
+
+int SilverLevel::getCoupons() const{
+    return 1;
+}
+
+string SilverLevel::getStage() const{
+    return "S";
+}

@@ -8,8 +8,13 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
+<<<<<<< HEAD
       "cwd": "c:/Users/ITKashefi/Desktop/Faz1,2/customer_level",
       "program": "c:/Users/ITKashefi/Desktop/Faz1,2/customer_level/build/Debug/outDebug",
+=======
+      "cwd": "d:/1/.vscode",
+      "program": "d:/1/.vscode/build/Debug/outDebug",
+>>>>>>> 57573a606e9fa61e6fe2ac5cefa5dac380918ad0
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

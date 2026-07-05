@@ -70,6 +70,17 @@ void Customer::setLevel(MembershipLevel* newLevel){
     cout << "your new level is " << newLevelName << endl;
 }
 
+void Customer::showMenu(){
+    cout << "\n===== Customer Menu =====\n";
+    cout << "Level : " << level->getLevelName() << endl;
+    cout << "Points: " << points << endl;
+    cout << "1. View all restaurants" << endl;
+    cout << "2. Cart" << endl;
+    cout << "3. Order history" << endl;
+    cout << "0. Logout" << endl;
+    cout << "Choice: ";
+}
+
 int Customer::getPointsNextLevel() const {
     if(point < 100){return 100 - points;}
     else if(points < 300){return 300 - points;}
@@ -252,14 +263,107 @@ int Customer::getAvailableCouponCount() const {
     return getAvailableCoupons().size();
 }
 
+void Customer::addLevelHistory(const string& oldLe, const string& newLe, const string& couse) {
+    ChangeLevel record;
+    record.pastLevel = oldLe;
+    record.newLevel = newLe;
+    record.couse = couse;
+     record.dateChange = time(nullptr);
+    levelHistory.push_back(record);
+}
 
-void Customer::showMenu(){
-    cout << "\n===== Customer Menu =====\n";
-    cout << "Level : " << level->getLevelName() << endl;
-    cout << "Points: " << points << endl;
-    cout << "1. View all restaurants" << endl;
-    cout << "2. Cart" << endl;
-    cout << "3. Order history" << endl;
-    cout << "0. Logout" << endl;
-    cout << "Choice: ";
+vector<ChangeLevel> Customer::getLevelHistory() const {
+    return levelHistory;
+}
+
+void Customer::showLevelHistory() const{
+    if(levelHistory.empty()){
+        cout << "there is bo hidtory available" << endl;
+        return ;
+    }
+    cout <"/n----- history -----" << endl;
+    for(const auto& record : levelHistory){
+        char buffer[80];
+        struct tm* timeInfo = localtime(&record.dateChange);
+        strftime(buffer, sizeof(buffer) ,"%Y-%m-%d %H:%M:%S", timeInfo);
+        cout << "past level was " << record.pastLevel << endl;
+        cout << "new level is " << record.newLevel << endl;
+        cout << "couse" << couse << endl;
+    }
+}
+
+string Customer::getStage() const {
+    vector<string> marks;
+    
+    if (isFrequentBuyer()) marks.push_back("[FB] Frequent Buyer");
+    if (isNightCustomer()) marks.push_back("[NC] Night Customer");
+    if (isLoyalMember()) marks.push_back("[LM] Loyal Member");
+    
+    if (marks.empty()) return "No mark yet";
+    
+    string result;
+    for (const auto& mark : markss) {
+        result += marks + " ";
+    }
+    return result;
+}
+
+bool Customer::isFrequentBuyer() const {
+    return orders >= 5;
+}
+
+bool Customer::isNightCustomer() const {
+    time_t now = time(nullptr);
+    struct tm* timeinfo = localtime(&now);
+    return ( timeinfo->tm_hour <= 6 || timeinfo->tm_hour >= 21);
+}
+
+bool Customer::isLoyalMember() const {
+    return points >= 1000;
+}
+
+void Customer::showProfile() const{
+    cout << "/n----- CUSTOMER PROFILE -----" << endl;
+    cout << "name: " << getName() << endl;
+    cout << "Id:" << getId()  << endl;
+    cout << "username:" << getUsername << endl;
+    cout << "level:" << level->getStage() << level->getlevelName() << endl;
+    cout << "point:" << points << endl;
+
+    int pointsNextLevel = getPintsNextLEvel();
+    if(pointsNextLevel == 0){
+        cout << "maximum level!" << endl;
+    } else {
+        cout << "the point you need for next level is " << pointsNextLevel << endl; 
+    }
+    cout << "benefit" << endl;
+    cout << "dicount:" << level->getDiscount() << endl;
+    cout << "sending:" << level->getErsalCost() << endl;
+    cout << "point zarib:" << level->getPointZarib() << endl;
+    cout << "coupon:" << getAvailableCouponCount() << endl;
+    cout << "All order:" << orders << endl;
+}
+
+void Customer::updateLastOrderDate() {
+    previousOrder = time(nullptr);
+}
+
+void Customer::incrementConsecutiveOrders() {
+    orders++;
+}
+
+time_t Customer::getLastOrderDate() const {
+    return previousOrder;
+}
+
+void Customer::setLastOrderDate(time_t date) {
+    previousOrder = date;
+}
+
+int Customer::getConsecutiveOrders() const {
+    return orders;
+}
+
+void Customer::setConsecutiveOrders(int count) {
+    orders = count;
 }

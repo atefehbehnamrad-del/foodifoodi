@@ -54,7 +54,7 @@ User* UserDAO::createUserObject(int id, const string& username, const string& pa
  
 void UserDAO::insertUser(const User& user) {
     string sql =
-    "INSERT INTO users (id, name, role, username, password, restaurant_id, points, level) "
+    "INSERT INTO users (id, name, role, username, password, restaurant_id, points, level ) "
     "VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
  
     sqlite3_stmt* stmt = nullptr;
@@ -87,7 +87,7 @@ void UserDAO::insertUser(const User& user) {
         level = customer.getLevel()->getLevelName();
     }
     sqlite3_bind_int(stmt , 7 ,points);
-    sqlite3_bind_text(stmt , 8, level.c_str() , -1 ,SQLITE_TRANSIENT);
+    sqlite3_bind_text(stmt, 8, level.c_str(), -1, SQLITE_TRANSIENT);
  
     if (sqlite3_step(stmt) != SQLITE_DONE)
         cerr << "insertUser step failed: " << sqlite3_errmsg(db) << "\n";

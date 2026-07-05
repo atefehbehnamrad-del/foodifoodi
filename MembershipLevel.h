@@ -15,13 +15,11 @@ public:
     virtual int getErsalCost() const = 0;
     virtual int getNextLevel() const = 0;
     virtual int getCoupons() const = 0;
-    virtual string getstage() const = 0;
+    virtual string getStage() const = 0;
     int AllPoints(double orderPrice) const{
-        return static_cast(orderPrice * getPointZarib());
+        return static_cast<int>(orderPrice * getPointZarib());
     }
-    int FinalDiscount(double orderPrice) const{
-        return orderPrice * (getDiscount() / 100.0);
-    }
+    return static_cast<int>(orderPrice * (getDiscount() / 100.0));
 };
 
 #endif

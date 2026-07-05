@@ -26,14 +26,14 @@ struct ChangeLevel{
     string newLevel;
     time_t dateChange;
     string reason;
-}
+};
 
 class Customer : public User {
 private:
     MembershipLevel* level;
     int points;
     vector<ChangeLevel> levelHistory;
-    vector<Coupon> coupons;
+    vector<Coupons> coupons;
     time_t previousOrder; 
     time_t registerDate;
     int orders;

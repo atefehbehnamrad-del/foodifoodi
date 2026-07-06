@@ -17,6 +17,9 @@ public:
     void insertUser(const User& user);
     void updateUser(const User& user);
     void deleteUser(int id);
+    void updateLevel(int userId, const std::string& level);
+    void updatePoints(int userId, int points);
+    void saveCustomerState(Customer* customer);
 
     User* getUserById(int id);
     User* findByUsername(const std::string& username);

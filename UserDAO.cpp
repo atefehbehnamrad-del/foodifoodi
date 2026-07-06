@@ -32,14 +32,15 @@ User* UserDAO::createUserObject(int id, const string& username, const string& pa
                                 int points , const string& level) {
     if (role == "CUSTOMER"){
         Customer* customer = new Customer(id, username, password, name);
-        customer->addPoints(points);
-        if(level == "Silver"){
-            customer->setLevel(new SilverLevel());
-        } else if(level == "Gold"){
-            customer->setLevel(new GoldLevel());
-        } else if(level == "VIP"){
+        customer->setPoints(points);
+        if(level == "Normal")
+        customer->setLevel(new NormalLevel());
+        else if(level == "Silver")
+        customer->setLevel(new SilverLevel());
+        else if(level == "Gold")
+        customer->setLevel(new GoldLevel());
+        else
             customer->setLevel(new VipLevel());
-        }
         return customer;
     }
     if (role == "RESTAURANT_MANAGER")
@@ -254,8 +255,6 @@ void UserDAO::deleteUser(int id) {
  
     sqlite3_finalize(stmt);
 }
-=======
-#include <iostream>
 
 UserDAO::UserDAO(sqlite3* database) : db(database) {}
 
@@ -352,11 +351,49 @@ void UserDAO::updateUser(const User& user) {
         sqlite3_bind_int(stmt, 4, user.getId());
 
         if (sqlite3_step(stmt) != SQLITE_DONE) {
-            cout << "Update user failed.\n";
+            cout << "Update user failed." << endl;
         }
     }
 
     sqlite3_finalize(stmt);
+}
+
+void UserDAO::updateLevel(int userId, const string& level)
+{
+    string sql = "UPDATE users SET level=? WHERE id=?;";
+
+    sqlite3_stmt* stmt = nullptr;
+    sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+
+    sqlite3_bind_text(stmt,1,level.c_str(),-1,SQLITE_TRANSIENT);
+    sqlite3_bind_int(stmt,2,userId);
+
+    sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
+}
+
+void UserDAO::updatePoints(int userId, int points)
+{
+    string sql = "UPDATE users SET points=? WHERE id=?;";
+
+    sqlite3_stmt* stmt = nullptr;
+    sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+
+    sqlite3_bind_int(stmt,1,points);
+    sqlite3_bind_int(stmt,2,userId);
+
+    sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
+}
+
+void UserDAO::saveCustomerState(Customer* customer)
+{
+    updatePoints(customer->getId(), customer->getPoints());
+
+    updateLevel(
+        customer->getId(),
+        customer->getLevel()->getLevelName()
+    );
 }
 
 void UserDAO::deleteUser(int id) {
@@ -373,4 +410,3 @@ void UserDAO::deleteUser(int id) {
 
     sqlite3_finalize(stmt);
 }
->>>>>>> 57573a606e9fa61e6fe2ac5cefa5dac380918ad0

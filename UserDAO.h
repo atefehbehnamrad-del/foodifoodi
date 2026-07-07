@@ -10,34 +10,75 @@
 #include <vector>
 #include <string>
 
+using namespace std;
+
+struct LevelChangeRecord {
+    string pastLevel;
+    string newLevel;
+    time_t dateChange;
+    string reason;
+};
+
+struct Coupons {
+    string code;
+    int discount;
+    time_t date;
+    string description;
+    bool isUsed;
+};
+
 class UserDAO {
 public:
     UserDAO(sqlite3* db);
+    ~UserDAO();
 
     void insertUser(const User& user);
     void updateUser(const User& user);
     void deleteUser(int id);
-    void updateLevel(int userId, const std::string& level);
-    void updatePoints(int userId, int points);
-    void saveCustomerState(Customer* customer);
-
+    
     User* getUserById(int id);
     User* findByUsername(const std::string& username);
 
-    std::vector<User*> getAllUsers();
+    vector<User*> getAllUsers();
+
+    Customer* getCustomerById(int id);
+    Customer* getCustomerByUsername(const string& username);
+
+    vector<Customer*> getAllCustomer();
+
+    bool updateCustomer(Customer* customer);
+    bool updatePoints(int customerId , int newPoint);
+    bool updateLevel(int customerId , const string& namelevel);
+    bool saveLevelHistory(int customerId , const string& oldLevel ,const string& newLevel ,
+                    const string& couse);
+    vector<SaveLevelChange> getLevelHistory(int customerId);
+    bool saveCoupon(int customerId , const Coupons& coupon);
+
+    vector<Coupons> getCoupons(int customerId);
+
+    bool updateCouponStatus(int customerId, const string& couponCode, bool used);
+    bool deleteExpiredCoupons(int customerId);
+
+    int getAllcustomer() const;
+    double getAvrage() const;
+
+    vector<pair<string , int>> getLevel;
+
+    string getTime();
+    
 
 private:
     sqlite3* db;
 
     User* createUserObject(
         int id,
-        const std::string& username,
-        const std::string& password,
-        const std::string& name,
-        const std::string& role,
+        const string& username,
+        const string& password,
+        const string& name,
+        const string& role,
         int restaurantId,
         int points,
-        const std::string& level
+        const string& level
     );
 };
 
